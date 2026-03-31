@@ -1,0 +1,1564 @@
+openapi: 3.1.0
+info:
+  title: Api
+  version: 0.1.0
+  description: Property Pro | Wiseworx API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: auth
+    description: Authentication
+  - name: users
+    description: User management
+  - name: properties
+    description: Property management
+  - name: units
+    description: Unit management
+  - name: leases
+    description: Lease management
+  - name: transactions
+    description: Financial transactions
+  - name: maintenance
+    description: Maintenance requests
+  - name: notifications
+    description: Notifications
+  - name: audit
+    description: Audit logs
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current user
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /users:
+    get:
+      operationId: listUsers
+      tags: [users]
+      summary: List users
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: role
+          in: query
+          schema:
+            type: string
+            enum: [owner, admin, tenant, vendor]
+      responses:
+        "200":
+          description: Users list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+    post:
+      operationId: createUser
+      tags: [users]
+      summary: Create user
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUserRequest"
+      responses:
+        "201":
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /users/{id}:
+    get:
+      operationId: getUser
+      tags: [users]
+      summary: Get user
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: User
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+    put:
+      operationId: updateUser
+      tags: [users]
+      summary: Update user
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserRequest"
+      responses:
+        "200":
+          description: Updated user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+    delete:
+      operationId: deleteUser
+      tags: [users]
+      summary: Delete user
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /properties:
+    get:
+      operationId: listProperties
+      tags: [properties]
+      summary: List properties
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Properties list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Property"
+    post:
+      operationId: createProperty
+      tags: [properties]
+      summary: Create property
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePropertyRequest"
+      responses:
+        "201":
+          description: Property created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Property"
+
+  /properties/{id}:
+    get:
+      operationId: getProperty
+      tags: [properties]
+      summary: Get property
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Property
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Property"
+    put:
+      operationId: updateProperty
+      tags: [properties]
+      summary: Update property
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePropertyRequest"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Property"
+    delete:
+      operationId: deleteProperty
+      tags: [properties]
+      summary: Delete property
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /units:
+    get:
+      operationId: listUnits
+      tags: [units]
+      summary: List units
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: propertyId
+          in: query
+          schema:
+            type: integer
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [vacant, occupied, maintenance]
+      responses:
+        "200":
+          description: Units list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Unit"
+    post:
+      operationId: createUnit
+      tags: [units]
+      summary: Create unit
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUnitRequest"
+      responses:
+        "201":
+          description: Unit created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Unit"
+
+  /units/{id}:
+    get:
+      operationId: getUnit
+      tags: [units]
+      summary: Get unit
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Unit
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Unit"
+    put:
+      operationId: updateUnit
+      tags: [units]
+      summary: Update unit
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUnitRequest"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Unit"
+    delete:
+      operationId: deleteUnit
+      tags: [units]
+      summary: Delete unit
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /leases:
+    get:
+      operationId: listLeases
+      tags: [leases]
+      summary: List leases
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: tenantId
+          in: query
+          schema:
+            type: integer
+        - name: unitId
+          in: query
+          schema:
+            type: integer
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [active, expired, terminated, pending]
+      responses:
+        "200":
+          description: Leases list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Lease"
+    post:
+      operationId: createLease
+      tags: [leases]
+      summary: Create lease
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateLeaseRequest"
+      responses:
+        "201":
+          description: Lease created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Lease"
+
+  /leases/{id}:
+    get:
+      operationId: getLease
+      tags: [leases]
+      summary: Get lease
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Lease
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Lease"
+    put:
+      operationId: updateLease
+      tags: [leases]
+      summary: Update lease
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateLeaseRequest"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Lease"
+
+  /transactions:
+    get:
+      operationId: listTransactions
+      tags: [transactions]
+      summary: List transactions
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: tenantId
+          in: query
+          schema:
+            type: integer
+        - name: leaseId
+          in: query
+          schema:
+            type: integer
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [rent, deposit, expense, penalty, other]
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, completed, failed, refunded]
+        - name: from
+          in: query
+          schema:
+            type: string
+        - name: to
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Transactions list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Transaction"
+    post:
+      operationId: createTransaction
+      tags: [transactions]
+      summary: Create transaction
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTransactionRequest"
+      responses:
+        "201":
+          description: Transaction created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Transaction"
+
+  /transactions/{id}:
+    get:
+      operationId: getTransaction
+      tags: [transactions]
+      summary: Get transaction
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Transaction
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Transaction"
+
+  /transactions/summary:
+    get:
+      operationId: getTransactionSummary
+      tags: [transactions]
+      summary: Get financial summary
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: from
+          in: query
+          schema:
+            type: string
+        - name: to
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Financial summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionSummary"
+
+  /maintenance:
+    get:
+      operationId: listMaintenanceRequests
+      tags: [maintenance]
+      summary: List maintenance requests
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: tenantId
+          in: query
+          schema:
+            type: integer
+        - name: unitId
+          in: query
+          schema:
+            type: integer
+        - name: vendorId
+          in: query
+          schema:
+            type: integer
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, in_progress, resolved, cancelled]
+        - name: priority
+          in: query
+          schema:
+            type: string
+            enum: [low, medium, high, urgent]
+      responses:
+        "200":
+          description: Maintenance requests list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MaintenanceRequest"
+    post:
+      operationId: createMaintenanceRequest
+      tags: [maintenance]
+      summary: Create maintenance request
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateMaintenanceRequest"
+      responses:
+        "201":
+          description: Maintenance request created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MaintenanceRequest"
+
+  /maintenance/{id}:
+    get:
+      operationId: getMaintenanceRequest
+      tags: [maintenance]
+      summary: Get maintenance request
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Maintenance request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MaintenanceRequest"
+    put:
+      operationId: updateMaintenanceRequest
+      tags: [maintenance]
+      summary: Update maintenance request
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateMaintenanceRequest"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MaintenanceRequest"
+
+  /notifications:
+    get:
+      operationId: listNotifications
+      tags: [notifications]
+      summary: List notifications for current user
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Notifications
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Notification"
+
+  /notifications/{id}/read:
+    patch:
+      operationId: markNotificationRead
+      tags: [notifications]
+      summary: Mark notification as read
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Notification"
+
+  /audit:
+    get:
+      operationId: listAuditLogs
+      tags: [audit]
+      summary: List audit logs
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: query
+          schema:
+            type: integer
+        - name: action
+          in: query
+          schema:
+            type: string
+        - name: from
+          in: query
+          schema:
+            type: string
+        - name: to
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Audit logs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AuditLog"
+
+  /dashboard/owner:
+    get:
+      operationId: getOwnerDashboard
+      tags: [properties]
+      summary: Owner dashboard summary
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Owner dashboard data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OwnerDashboard"
+
+  /dashboard/admin:
+    get:
+      operationId: getAdminDashboard
+      tags: [users]
+      summary: Admin dashboard summary
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Admin dashboard data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminDashboard"
+
+  /dashboard/tenant:
+    get:
+      operationId: getTenantDashboard
+      tags: [leases]
+      summary: Tenant dashboard summary
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Tenant dashboard data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TenantDashboard"
+
+  /dashboard/vendor:
+    get:
+      operationId: getVendorDashboard
+      tags: [maintenance]
+      summary: Vendor dashboard summary
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Vendor dashboard data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VendorDashboard"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          type: string
+      required:
+        - message
+
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+      required:
+        - email
+        - password
+
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
+      required:
+        - token
+        - user
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        name:
+          type: string
+        role:
+          type: string
+          enum: [owner, admin, tenant, vendor]
+        phone:
+          type: string
+          nullable: true
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+      required:
+        - id
+        - email
+        - name
+        - role
+        - isActive
+        - createdAt
+
+    CreateUserRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+        name:
+          type: string
+        role:
+          type: string
+          enum: [owner, admin, tenant, vendor]
+        phone:
+          type: string
+      required:
+        - email
+        - password
+        - name
+        - role
+
+    UpdateUserRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        role:
+          type: string
+          enum: [owner, admin, tenant, vendor]
+        phone:
+          type: string
+        isActive:
+          type: boolean
+
+    Property:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        address:
+          type: string
+        city:
+          type: string
+        province:
+          type: string
+        postalCode:
+          type: string
+          nullable: true
+        ownerId:
+          type: integer
+        totalUnits:
+          type: integer
+        occupiedUnits:
+          type: integer
+        createdAt:
+          type: string
+      required:
+        - id
+        - name
+        - address
+        - city
+        - province
+        - ownerId
+        - totalUnits
+        - occupiedUnits
+        - createdAt
+
+    CreatePropertyRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        address:
+          type: string
+        city:
+          type: string
+        province:
+          type: string
+        postalCode:
+          type: string
+        ownerId:
+          type: integer
+      required:
+        - name
+        - address
+        - city
+        - province
+        - ownerId
+
+    Unit:
+      type: object
+      properties:
+        id:
+          type: integer
+        propertyId:
+          type: integer
+        unitNumber:
+          type: string
+        tier:
+          type: string
+          enum: [entry_level, small, medium, large, custom]
+        monthlyRent:
+          type: number
+        status:
+          type: string
+          enum: [vacant, occupied, maintenance]
+        bedrooms:
+          type: integer
+          nullable: true
+        bathrooms:
+          type: integer
+          nullable: true
+        size:
+          type: number
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+        property:
+          $ref: "#/components/schemas/Property"
+          nullable: true
+      required:
+        - id
+        - propertyId
+        - unitNumber
+        - tier
+        - monthlyRent
+        - status
+        - createdAt
+
+    CreateUnitRequest:
+      type: object
+      properties:
+        propertyId:
+          type: integer
+        unitNumber:
+          type: string
+        tier:
+          type: string
+          enum: [entry_level, small, medium, large, custom]
+        monthlyRent:
+          type: number
+        status:
+          type: string
+          enum: [vacant, occupied, maintenance]
+        bedrooms:
+          type: integer
+        bathrooms:
+          type: integer
+        size:
+          type: number
+        description:
+          type: string
+      required:
+        - propertyId
+        - unitNumber
+        - tier
+        - monthlyRent
+        - status
+
+    Lease:
+      type: object
+      properties:
+        id:
+          type: integer
+        tenantId:
+          type: integer
+        unitId:
+          type: integer
+        startDate:
+          type: string
+        endDate:
+          type: string
+        monthlyRent:
+          type: number
+        depositAmount:
+          type: number
+        status:
+          type: string
+          enum: [active, expired, terminated, pending]
+        paymentDueDay:
+          type: integer
+        notes:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+        tenant:
+          $ref: "#/components/schemas/User"
+          nullable: true
+        unit:
+          $ref: "#/components/schemas/Unit"
+          nullable: true
+      required:
+        - id
+        - tenantId
+        - unitId
+        - startDate
+        - endDate
+        - monthlyRent
+        - depositAmount
+        - status
+        - paymentDueDay
+        - createdAt
+
+    CreateLeaseRequest:
+      type: object
+      properties:
+        tenantId:
+          type: integer
+        unitId:
+          type: integer
+        startDate:
+          type: string
+        endDate:
+          type: string
+        monthlyRent:
+          type: number
+        depositAmount:
+          type: number
+        status:
+          type: string
+          enum: [active, expired, terminated, pending]
+        paymentDueDay:
+          type: integer
+        notes:
+          type: string
+      required:
+        - tenantId
+        - unitId
+        - startDate
+        - endDate
+        - monthlyRent
+        - depositAmount
+        - status
+        - paymentDueDay
+
+    UpdateLeaseRequest:
+      type: object
+      properties:
+        endDate:
+          type: string
+        monthlyRent:
+          type: number
+        status:
+          type: string
+          enum: [active, expired, terminated, pending]
+        paymentDueDay:
+          type: integer
+        notes:
+          type: string
+
+    Transaction:
+      type: object
+      properties:
+        id:
+          type: integer
+        leaseId:
+          type: integer
+          nullable: true
+        tenantId:
+          type: integer
+          nullable: true
+        amount:
+          type: number
+        type:
+          type: string
+          enum: [rent, deposit, expense, penalty, other]
+        status:
+          type: string
+          enum: [pending, completed, failed, refunded]
+        reference:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        paymentMethod:
+          type: string
+          nullable: true
+        paidAt:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+        tenant:
+          $ref: "#/components/schemas/User"
+          nullable: true
+      required:
+        - id
+        - amount
+        - type
+        - status
+        - createdAt
+
+    CreateTransactionRequest:
+      type: object
+      properties:
+        leaseId:
+          type: integer
+        tenantId:
+          type: integer
+        amount:
+          type: number
+        type:
+          type: string
+          enum: [rent, deposit, expense, penalty, other]
+        status:
+          type: string
+          enum: [pending, completed, failed, refunded]
+        reference:
+          type: string
+        description:
+          type: string
+        paymentMethod:
+          type: string
+        paidAt:
+          type: string
+      required:
+        - amount
+        - type
+        - status
+
+    TransactionSummary:
+      type: object
+      properties:
+        totalIncome:
+          type: number
+        totalExpenses:
+          type: number
+        netIncome:
+          type: number
+        pendingPayments:
+          type: number
+        overdueCount:
+          type: integer
+        monthlyBreakdown:
+          type: array
+          items:
+            type: object
+            properties:
+              month:
+                type: string
+              income:
+                type: number
+              expenses:
+                type: number
+            required:
+              - month
+              - income
+              - expenses
+      required:
+        - totalIncome
+        - totalExpenses
+        - netIncome
+        - pendingPayments
+        - overdueCount
+        - monthlyBreakdown
+
+    MaintenanceRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+        tenantId:
+          type: integer
+        unitId:
+          type: integer
+        vendorId:
+          type: integer
+          nullable: true
+        title:
+          type: string
+        description:
+          type: string
+        priority:
+          type: string
+          enum: [low, medium, high, urgent]
+        status:
+          type: string
+          enum: [pending, in_progress, resolved, cancelled]
+        resolvedAt:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+        tenant:
+          $ref: "#/components/schemas/User"
+          nullable: true
+        vendor:
+          $ref: "#/components/schemas/User"
+          nullable: true
+        unit:
+          $ref: "#/components/schemas/Unit"
+          nullable: true
+      required:
+        - id
+        - tenantId
+        - unitId
+        - title
+        - description
+        - priority
+        - status
+        - createdAt
+
+    CreateMaintenanceRequest:
+      type: object
+      properties:
+        tenantId:
+          type: integer
+        unitId:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        priority:
+          type: string
+          enum: [low, medium, high, urgent]
+      required:
+        - tenantId
+        - unitId
+        - title
+        - description
+        - priority
+
+    UpdateMaintenanceRequest:
+      type: object
+      properties:
+        vendorId:
+          type: integer
+        status:
+          type: string
+          enum: [pending, in_progress, resolved, cancelled]
+        notes:
+          type: string
+        resolvedAt:
+          type: string
+
+    Notification:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        title:
+          type: string
+        message:
+          type: string
+        type:
+          type: string
+          enum: [info, warning, success, error]
+        isRead:
+          type: boolean
+        createdAt:
+          type: string
+      required:
+        - id
+        - userId
+        - title
+        - message
+        - type
+        - isRead
+        - createdAt
+
+    AuditLog:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+          nullable: true
+        action:
+          type: string
+        entity:
+          type: string
+        entityId:
+          type: integer
+          nullable: true
+        details:
+          type: string
+          nullable: true
+        ipAddress:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
+          nullable: true
+      required:
+        - id
+        - action
+        - entity
+        - createdAt
+
+    OwnerDashboard:
+      type: object
+      properties:
+        totalProperties:
+          type: integer
+        totalUnits:
+          type: integer
+        occupiedUnits:
+          type: integer
+        vacantUnits:
+          type: integer
+        occupancyRate:
+          type: number
+        monthlyIncome:
+          type: number
+        yearlyIncome:
+          type: number
+        pendingMaintenance:
+          type: integer
+        recentTransactions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Transaction"
+        incomeChart:
+          type: array
+          items:
+            type: object
+            properties:
+              month:
+                type: string
+              amount:
+                type: number
+            required:
+              - month
+              - amount
+      required:
+        - totalProperties
+        - totalUnits
+        - occupiedUnits
+        - vacantUnits
+        - occupancyRate
+        - monthlyIncome
+        - yearlyIncome
+        - pendingMaintenance
+        - recentTransactions
+        - incomeChart
+
+    AdminDashboard:
+      type: object
+      properties:
+        totalTenants:
+          type: integer
+        activeTenants:
+          type: integer
+        totalVendors:
+          type: integer
+        pendingMaintenanceRequests:
+          type: integer
+        expiringLeases:
+          type: array
+          items:
+            $ref: "#/components/schemas/Lease"
+        recentActivity:
+          type: array
+          items:
+            $ref: "#/components/schemas/AuditLog"
+        unitStatusBreakdown:
+          type: object
+          properties:
+            vacant:
+              type: integer
+            occupied:
+              type: integer
+            maintenance:
+              type: integer
+          required:
+            - vacant
+            - occupied
+            - maintenance
+      required:
+        - totalTenants
+        - activeTenants
+        - totalVendors
+        - pendingMaintenanceRequests
+        - expiringLeases
+        - recentActivity
+        - unitStatusBreakdown
+
+    TenantDashboard:
+      type: object
+      properties:
+        activeLease:
+          $ref: "#/components/schemas/Lease"
+          nullable: true
+        unit:
+          $ref: "#/components/schemas/Unit"
+          nullable: true
+        nextPaymentDue:
+          type: string
+          nullable: true
+        nextPaymentAmount:
+          type: number
+          nullable: true
+        paymentHistory:
+          type: array
+          items:
+            $ref: "#/components/schemas/Transaction"
+        maintenanceRequests:
+          type: array
+          items:
+            $ref: "#/components/schemas/MaintenanceRequest"
+        notifications:
+          type: array
+          items:
+            $ref: "#/components/schemas/Notification"
+      required:
+        - paymentHistory
+        - maintenanceRequests
+        - notifications
+
+    VendorDashboard:
+      type: object
+      properties:
+        assignedJobs:
+          type: array
+          items:
+            $ref: "#/components/schemas/MaintenanceRequest"
+        pendingJobs:
+          type: integer
+        inProgressJobs:
+          type: integer
+        completedJobs:
+          type: integer
+        recentlyCompleted:
+          type: array
+          items:
+            $ref: "#/components/schemas/MaintenanceRequest"
+      required:
+        - assignedJobs
+        - pendingJobs
+        - inProgressJobs
+        - completedJobs
+        - recentlyCompleted
