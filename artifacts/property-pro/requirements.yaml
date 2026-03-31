@@ -1,0 +1,16 @@
+packages:
+  "recharts": "Data visualization for owner and admin dashboards"
+  "date-fns": "Formatting dates for tables and leases"
+  "jwt-decode": "Decoding JWT auth tokens from localStorage"
+  "clsx": "Utility for constructing className strings conditionally"
+  "tailwind-merge": "Utility for merging tailwind classes without style conflicts"
+
+images:
+  - path: "artifacts/property-pro/public/images/login-bg.png"
+    description: "Abstract luxurious dark architectural building facade at night with subtle teal and warm gold lighting, deep shadows, professional premium real estate enterprise feel"
+    aspect_ratio: "16:9"
+
+notes:
+  - Using generated Orval hooks from @workspace/api-client-react for all API interactions
+  - Auth token is stored in localStorage as 'property_pro_token'
+  - The App uses a professional dark mode by default for an enterprise feel
